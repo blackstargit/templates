@@ -1,0 +1,48 @@
+@startuml User Activity Diagram - Detailed
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+start
+
+:User inputs a base prompt (patient info, etc.) 
+    & selects the prompt type;
+
+partition "Prompt Generation" {
+    :Prompt Generator Crew is invoked;
+    :Prompt Generator refines the base prompt using 
+    dynamic prompt engineering technique 'prompt type';
+}
+
+note right
+    - Chain-of-thought
+    - Least-to-most
+    - Persona-based
+    - Self-consistency
+    - Tree-of-thoughts
+end note
+
+:User reviews refined prompt  inputs missing patient 
+information that the system deems necessary to work properly;
+
+partition "Care Plan Generation" {
+    :Care Plan Generation Crew:
+        - File Reader retrieves reference care plan
+        - Care Plan Generator uses refined prompt and instructions 
+            to generate personalized care plan
+        - Evaluator assesses the generated care plan for quality and 
+            compliance against scorecard;
+}
+
+:API returns Generated Care Plan and Evaluation Report;
+
+if (User satisfied?) then (yes)
+    :User accepts the care plan;
+else (no)
+    :User modifies input or base prompt;
+    :User resubmits the request;
+endif
+stop
+@enduml

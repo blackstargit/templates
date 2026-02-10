@@ -1,0 +1,80 @@
+@startuml Care Plan Generation System Architecture
+
+!define RECTANGLE class
+skinparam linetype ortho
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+package "Frontend (React)" {
+  [Web UI] as UI
+}
+
+package "Backend (FastAPI)" {
+  [API Endpoints] as API
+  
+  package "CrewAI Framework" {
+    package "Prompt Generation Crew" {
+      [Prompt Generator]
+      [Prompt Techniques]
+      note right of [Prompt Techniques]
+        - Chain-of-thought
+        - Least-to-most
+        - Persona-based
+        - Self-consistency
+        - Tree-of-thoughts
+      end note
+    }
+
+    package "Care Plan Generation Crew" {
+      [File Reader]
+      [Care Plan Generator] 
+      [Evaluator]
+      
+      note bottom of [Evaluator]
+        Sequential Process:
+        File Reader → Care Plan Generator → Evaluator
+      end note
+    }
+  }
+  
+  package "Data" {
+    [Care Plan Instructions] as Instructions
+    [Care Instruction Scorecard] as Scorecard
+  }
+  
+  package "Output" {
+    [Generated Care Plan] as CarePlan
+    [Evaluation Report] as Report
+  }
+}
+
+package "External Services" {
+  [Google Gemini API] as Gemini
+}
+
+' Relationships
+UI --> API : HTTP Requests
+API --> [Prompt Generator] : Invokes
+API --> [File Reader] : Invokes
+
+' Task context flow
+[File Reader] --> [Care Plan Generator] : Provides context
+[Care Plan Generator] --> [Evaluator] : Provides care plan
+
+[File Reader] --> Instructions : Reads
+[Evaluator] --> Scorecard : Reads
+
+[Care Plan Generator] --> CarePlan : Generates
+[Evaluator] --> Report : Generates
+
+[File Reader] --> Gemini : Uses
+[Care Plan Generator] --> Gemini : Uses
+[Evaluator] --> Gemini : Uses
+[Prompt Generator] --> Gemini : Uses
+
+API --> CarePlan : Returns
+API --> Report : Returns
+
+@enduml
